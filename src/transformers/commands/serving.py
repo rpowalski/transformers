@@ -121,12 +121,39 @@ class ServeCommand(BaseTransformersCLICommand):
             )
         else:
             logger.info("Serving model over {}:{}".format(host, port))
-            self._app = FastAPI(routes=[
-                APIRoute("/", self.model_info, response_model=ServeModelInfoResult, response_class=JSONResponse, methods=["GET"]),
-                APIRoute("/tokenize", self.tokenize, response_model=ServeTokenizeResult, response_class=JSONResponse, methods=["POST"]),
-                APIRoute("/detokenize", self.detokenize, response_model=ServeDeTokenizeResult, response_class=JSONResponse, methods=["POST"]),
-                APIRoute("/forward", self.forward, response_model=ServeForwardResult, response_class=JSONResponse, methods=["POST"]),
-            ], timeout=600)
+            self._app = FastAPI(
+                routes=[
+                    APIRoute(
+                        "/",
+                        self.model_info,
+                        response_model=ServeModelInfoResult,
+                        response_class=JSONResponse,
+                        methods=["GET"],
+                    ),
+                    APIRoute(
+                        "/tokenize",
+                        self.tokenize,
+                        response_model=ServeTokenizeResult,
+                        response_class=JSONResponse,
+                        methods=["POST"],
+                    ),
+                    APIRoute(
+                        "/detokenize",
+                        self.detokenize,
+                        response_model=ServeDeTokenizeResult,
+                        response_class=JSONResponse,
+                        methods=["POST"],
+                    ),
+                    APIRoute(
+                        "/forward",
+                        self.forward,
+                        response_model=ServeForwardResult,
+                        response_class=JSONResponse,
+                        methods=["POST"],
+                    ),
+                ],
+                timeout=600,
+            )
 
     def run(self):
         run(self._app, host=self.host, port=self.port, workers=self.workers)
@@ -187,4 +214,3 @@ class ServeCommand(BaseTransformersCLICommand):
             return ServeForwardResult(output=output)
         except Exception as e:
             raise HTTPException(500, {"error": str(e)})
-
